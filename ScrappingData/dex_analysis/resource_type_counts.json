@@ -1,0 +1,21 @@
+{
+ "anim": 55,
+ "animator": 34,
+ "attr": 1446,
+ "bool": 8,
+ "color": 1008,
+ "dimen": 1618,
+ "drawable": 761,
+ "font": 22,
+ "id": 1100,
+ "integer": 71,
+ "interpolator": 18,
+ "layout": 335,
+ "menu": 3,
+ "mipmap": 3,
+ "plurals": 1,
+ "raw": 20,
+ "string": 701,
+ "style": 1307,
+ "xml": 9
+}
