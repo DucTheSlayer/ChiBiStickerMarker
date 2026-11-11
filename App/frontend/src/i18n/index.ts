@@ -27,6 +27,9 @@ const en = {
   language: 'Language', privacy: 'Privacy policy', about: 'About', version: 'Version',
   updateRequired: 'Please update the app to continue.', rename: 'Rename', exportFailed: 'Export failed.',
   saved: 'Saved!', discard: 'Discard changes?', discardBody: 'Your edits will be lost.',
+  greeting: 'Hi there 👋', heroTitle: 'Make your own stickers', heroBody: 'Turn any photo into a cute sticker in seconds.',
+  heroCta: 'Create now', featured: 'Trending', morePacks: 'Explore more', results: 'Results',
+  noResults: 'No packs found. Try another keyword.',
 } as const;
 
 export type Messages = { [K in keyof typeof en]: string };
@@ -56,6 +59,9 @@ const vi: Messages = {
   language: 'Ngôn ngữ', privacy: 'Chính sách bảo mật', about: 'Giới thiệu', version: 'Phiên bản',
   updateRequired: 'Vui lòng cập nhật ứng dụng để tiếp tục.', rename: 'Đổi tên', exportFailed: 'Xuất thất bại.',
   saved: 'Đã lưu!', discard: 'Bỏ thay đổi?', discardBody: 'Các chỉnh sửa sẽ mất.',
+  greeting: 'Xin chào 👋', heroTitle: 'Tạo sticker của riêng bạn', heroBody: 'Biến ảnh bất kỳ thành sticker đáng yêu chỉ trong vài giây.',
+  heroCta: 'Tạo ngay', featured: 'Nổi bật', morePacks: 'Khám phá thêm', results: 'Kết quả',
+  noResults: 'Không tìm thấy bộ nào. Thử từ khoá khác nhé.',
 };
 
 const dict: Record<LangCode, Messages> = { en, vi };

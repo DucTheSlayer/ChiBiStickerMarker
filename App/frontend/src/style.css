@@ -1,13 +1,26 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-50: #fff1f6;
+  --color-brand-50: #fff7fa;
   --color-brand-100: #ffe0ec;
   --color-brand-200: #ffc2d8;
   --color-brand-400: #ff8fb8;
   --color-brand-500: #ff6aa0;
   --color-brand-600: #e84d87;
   --color-ink: #3a2a3f;
+
+  /* Màu pastel phụ: nền thẻ gói sticker, điểm nhấn */
+  --color-candy-butter: #fff1c9;
+  --color-candy-mint: #d6f5e3;
+  --color-candy-sky: #d9ecff;
+  --color-candy-lilac: #e9e0ff;
+  --color-candy-peach: #ffe1d1;
+  --color-candy-rose: #ffdbe8;
+  --color-candy-grape: #b79cff;
+
+  --shadow-card: 0 8px 22px -10px rgb(232 77 135 / 0.22), 0 1px 3px rgb(58 42 63 / 0.05);
+  --shadow-pop: 0 14px 30px -12px rgb(232 77 135 / 0.55);
+
   --font-display: "Fredoka", "Baloo 2", system-ui, sans-serif;
 }
 
@@ -29,3 +42,7 @@ body {
   background-position: 0 0, 10px 10px;
 }
 .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+
+/* Ẩn thanh cuộn cho các hàng cuộn ngang (vẫn cuộn được) */
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
