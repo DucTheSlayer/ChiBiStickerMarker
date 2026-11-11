@@ -1,5 +1,6 @@
 import { stickerSvg, EMOTIONS, DECOR_GROUPS } from '../data/art.js';
-import { CATEGORIES, FONTS, PACKS, REMOTE_CONFIG, type PackDef } from '../data/catalog.js';
+import { ALL_PACKS, CATEGORIES, FONTS, REMOTE_CONFIG, type CatalogPack } from '../data/catalog.js';
+import { fluentSvg } from '../data/fluent.js';
 
 export interface PackSummary {
   id: string;
@@ -28,14 +29,19 @@ export interface PageResult<T> {
 
 const emojiOf = new Map(EMOTIONS.map((e) => [e.id, e.emoji]));
 
-export function toSummary(p: PackDef): PackSummary {
+function stickersOf(p: CatalogPack): { id: string; emoji: string }[] {
+  if (p.kind === 'fluent') return p.stickers;
+  return p.emotions.map((e) => ({ id: e, emoji: emojiOf.get(e) ?? '🙂' }));
+}
+
+export function toSummary(p: CatalogPack): PackSummary {
   return {
     id: p.id,
     name: p.name,
     publisher: p.publisher,
     categoryId: p.categoryId,
     animated: false,
-    stickerCount: p.emotions.length,
+    stickerCount: stickersOf(p).length,
     trayUrl: `/assets/packs/${p.id}/tray.svg`,
     premium: p.premium,
     downloads: p.downloads,
@@ -67,7 +73,7 @@ export interface ListQuery { category?: string; q?: string; page: number; pageSi
 
 export function listPacks(query: ListQuery): PageResult<PackSummary> {
   const q = query.q?.trim().toLowerCase();
-  const filtered = PACKS.filter((p) => {
+  const filtered = ALL_PACKS.filter((p) => {
     if (query.category && p.categoryId !== query.category) return false;
     if (q && !p.name.toLowerCase().includes(q)) return false;
     return true;
@@ -83,26 +89,34 @@ export function listPacks(query: ListQuery): PageResult<PackSummary> {
   };
 }
 
+/** 2 = cùng danh mục, 1 = cùng loài chibi hoặc cùng nguồn Fluent, 0 = không liên quan. */
+function relatedScore(a: CatalogPack, b: CatalogPack): number {
+  if (a.categoryId === b.categoryId) return 2;
+  if (a.kind === 'chibi' && b.kind === 'chibi') return a.species === b.species ? 1 : 0;
+  return a.kind === b.kind ? 1 : 0;
+}
+
 export function getPack(id: string): PackDetail | undefined {
-  const pack = PACKS.find((p) => p.id === id);
+  const pack = ALL_PACKS.find((p) => p.id === id);
   if (!pack) return undefined;
-  const related = PACKS.filter((p) => p.id !== id && (p.categoryId === pack.categoryId || p.species === pack.species))
+  const related = ALL_PACKS.filter((p) => p.id !== id && relatedScore(p, pack) > 0)
+    .sort((a, b) => relatedScore(b, pack) - relatedScore(a, pack))
     .slice(0, 6)
     .map(toSummary);
   return {
     ...toSummary(pack),
-    stickers: pack.emotions.map((e) => ({
-      id: e,
-      emoji: emojiOf.get(e) ?? '🙂',
-      url: `/assets/packs/${pack.id}/${e}.svg`,
-    })),
+    stickers: stickersOf(pack).map((s) => ({ ...s, url: `/assets/packs/${pack.id}/${s.id}.svg` })),
     related,
   };
 }
 
 export function renderSticker(packId: string, stickerId: string): string | undefined {
-  const pack = PACKS.find((p) => p.id === packId);
+  const pack = ALL_PACKS.find((p) => p.id === packId);
   if (!pack) return undefined;
+  if (pack.kind === 'fluent') {
+    const id = stickerId === 'tray' ? pack.stickers[0]?.id : pack.stickers.find((s) => s.id === stickerId)?.id;
+    return id ? fluentSvg(id) : undefined;
+  }
   if (stickerId === 'tray') return stickerSvg(pack.species, 'happy', pack.palette);
   const emotion = pack.emotions.find((e) => e === stickerId);
   if (!emotion) return undefined;

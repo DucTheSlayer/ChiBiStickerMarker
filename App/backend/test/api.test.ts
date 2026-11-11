@@ -75,4 +75,21 @@ describe('API', () => {
       expect(p.stickerCount).toBeLessThanOrEqual(30);
     }
   });
+  it('fluent emoji packs: detail, every sticker renders, tray', async () => {
+    const food = await request(app).get('/api/packs?category=food');
+    expect(food.body.items.length).toBeGreaterThan(0);
+    const all = (await request(app).get('/api/packs?pageSize=50')).body.items as { id: string }[];
+    const fluent = all.filter((p) => p.id.startsWith('fluent-'));
+    expect(fluent.length).toBeGreaterThanOrEqual(9);
+    for (const p of fluent) {
+      const detail = (await request(app).get(`/api/packs/${p.id}`)).body;
+      expect(detail.related.length).toBeGreaterThan(0);
+      for (const s of detail.stickers) {
+        expect(s.emoji).toBeTruthy();
+        expect((await request(app).get(s.url)).status).toBe(200);
+      }
+      expect((await request(app).get(`/assets/packs/${p.id}/tray.svg`)).status).toBe(200);
+    }
+    expect((await request(app).get('/assets/packs/fluent-yummy/grinning-face.svg')).status).toBe(404);
+  });
 });

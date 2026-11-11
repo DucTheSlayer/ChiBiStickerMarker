@@ -1,4 +1,5 @@
 import { EMOTIONS, type Emotion, type Palette, type Species } from './art.js';
+import { FLUENT_PACKS } from './fluent-packs.js';
 
 export interface Category { id: string; name: { en: string; vi: string }; emoji: string }
 
@@ -8,9 +9,12 @@ export const CATEGORIES: Category[] = [
   { id: 'love', name: { en: 'Love', vi: 'Tình yêu' }, emoji: '💖' },
   { id: 'funny', name: { en: 'Funny', vi: 'Hài hước' }, emoji: '🤪' },
   { id: 'daily', name: { en: 'Daily', vi: 'Hằng ngày' }, emoji: '☀️' },
+  { id: 'food', name: { en: 'Food', vi: 'Đồ ăn' }, emoji: '🍔' },
+  { id: 'party', name: { en: 'Party', vi: 'Lễ hội' }, emoji: '🎉' },
 ];
 
 export interface PackDef {
+  kind: 'chibi';
   id: string;
   name: string;
   publisher: string;
@@ -74,6 +78,7 @@ function build(): PackDef[] {
       const palette = palettes[(ti + n) % palettes.length]!;
       n += 1;
       packs.push({
+        kind: 'chibi',
         id: `${species}-${theme.suffix.toLowerCase().replace(/\s+/g, '-')}`,
         name: `${SPECIES_NAME[species]} ${theme.suffix}`,
         publisher: PUBLISHER,
@@ -87,6 +92,7 @@ function build(): PackDef[] {
     });
     // Mỗi loài thêm một pack "animals" đủ 12 cảm xúc.
     packs.push({
+      kind: 'chibi',
       id: `${species}-all-stars`,
       name: `${SPECIES_NAME[species]} All-Stars`,
       publisher: PUBLISHER,
@@ -102,6 +108,33 @@ function build(): PackDef[] {
 }
 
 export const PACKS: PackDef[] = build();
+
+/** Bộ sticker từ Microsoft Fluent Emoji (MIT). */
+export interface FluentPack {
+  kind: 'fluent';
+  id: string;
+  name: string;
+  publisher: string;
+  categoryId: string;
+  premium: boolean;
+  downloads: number;
+  stickers: { id: string; emoji: string }[];
+}
+
+export const FLUENT_CATALOG: FluentPack[] = FLUENT_PACKS.map((p, i) => ({
+  kind: 'fluent',
+  id: p.id,
+  name: p.name,
+  publisher: `${PUBLISHER} · Fluent Emoji`,
+  categoryId: p.categoryId,
+  premium: p.premium,
+  downloads: 20000 + ((i * 7919 + 4513) % 60000),
+  stickers: p.stickers.map(([icon, emoji]) => ({ id: icon, emoji })),
+}));
+
+export type CatalogPack = PackDef | FluentPack;
+
+export const ALL_PACKS: CatalogPack[] = [...PACKS, ...FLUENT_CATALOG];
 
 export const FONTS = [
   { id: 'comfortaa', family: 'Comfortaa', label: 'Comfortaa', premium: false },
